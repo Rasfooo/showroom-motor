@@ -62,7 +62,7 @@ export default function Auth() {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <h1 className="brand">🏍️ Showroom Motor</h1>
+        <h1 className="brand">Showroom Motor</h1>
         <p className="muted">
           {mode === 'signin'
             ? 'Masuk ke dashboard showroom kamu'
