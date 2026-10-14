@@ -27,6 +27,13 @@ export default function Auth() {
     return data
   }
 
+  // Bersihkan karakter aneh yang sering nyempil dari keyboard/autofill HP
+  // (mis. tanda kutip guillemet « » atau zero-width space)
+  const clean = (s) =>
+    String(s)
+      .replace(/[\u00AB\u00BB\u201C\u201D\u2018\u2019\u200B-\u200D\uFEFF]/g, '')
+      .trim()
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -34,8 +41,14 @@ export default function Auth() {
     setLoading(true)
     try {
       if (mode === 'signin') {
-        const email = await emailOf(username.trim())
-        const { error } = await signIn(email, password)
+        const uname = clean(username)
+        const email = await emailOf(uname)
+        // Coba password apa adanya dulu; kalau gagal, coba versi bersih
+        let { error } = await signIn(email, password)
+        if (error && clean(password) !== password) {
+          const retry = await signIn(email, clean(password))
+          error = retry.error
+        }
         if (error) throw new Error('Password salah. Coba lagi.')
         // Admin langsung ke Panel Admin; seller ke dashboard showroom-nya
         const { data: admin } = await supabase.rpc('is_admin')
