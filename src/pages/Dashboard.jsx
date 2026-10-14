@@ -200,6 +200,31 @@ export default function Dashboard() {
       {msg && <div className="alert info">{msg}</div>}
       {err && <div className="alert error">{err}</div>}
 
+      {/* Panduan seller baru — hilang otomatis kalau sudah ada motor */}
+      {motos.length === 0 && !showProfile && (
+        <div className="seller-guide">
+          <h3>👋 Selamat datang! Mulai dari sini:</h3>
+          <ol>
+            <li>
+              <strong>1. Tambah motormu</strong> — isi form di bawah: nama, harga,
+              foto (bisa banyak, nanti otomatis bergeser di katalog), deskripsi.
+            </li>
+            <li>
+              <strong>2. Pasang logo & pilih tema</strong> — klik tombol{' '}
+              <button type="button" className="link-inline" onClick={() => setShowProfile(true)}>
+                Profil &amp; Tema
+              </button>{' '}
+              di atas. Ada 12 tema siap pakai.
+            </li>
+            <li>
+              <strong>3. Bagikan link katalogmu</strong> — pakai tombol{' '}
+              <em>Lihat Katalog</em> untuk lihat hasilnya, lalu tempel link ke bio
+              TikTok / status WA.
+            </li>
+          </ol>
+        </div>
+      )}
+
       {/* Aksi utama: tambah motor */}
       <div className="dash-cta">
         <a className="btn primary lg" href="#form-motor">

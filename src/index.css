@@ -808,3 +808,95 @@ td { font-variant-numeric: tabular-nums; }
   .seller-actions { width: 100%; }
   .seller-actions .btn { flex: 1; text-align: center; }
 }
+
+
+/* ============================================================
+   FIX: header dashboard overflow di mobile
+   Penyebab: margin negatif var(--space-5) bikin lebar > viewport.
+   Solusi: clamp padding container di layar kecil + hilangkan margin negatif.
+   ============================================================ */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+@media (max-width: 640px) {
+  :root { --space-5: 16px; }
+  .container { padding-left: 16px; padding-right: 16px; }
+  .dash-header {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .header-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+  .header-actions .btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 12px;
+    font-size: 0.86rem;
+  }
+  .dash-brand { gap: 10px; }
+  .dash-brand h1 { font-size: 1.15rem; }
+  .form-grid { grid-template-columns: 1fr !important; }
+  .panel { padding: 18px 16px; }
+}
+
+
+/* ============================================================
+   EMPTY STATE katalog (showroom belum upload motor)
+   ============================================================ */
+.empty-catalog {
+  text-align: center;
+  padding: 56px 20px;
+  border: 1.5px dashed var(--color-border);
+  border-radius: 20px;
+  background: color-mix(in oklab, var(--color-panel) 60%, transparent);
+  margin-top: 8px;
+}
+.empty-icon { font-size: 2.6rem; display: block; margin-bottom: 10px; opacity: 0.9; }
+.empty-title { font-weight: 650; font-size: 1.05rem; margin: 0 0 6px; letter-spacing: -0.02em; }
+.empty-catalog .muted { max-width: 340px; margin: 0 auto; line-height: 1.5; }
+
+
+/* ============================================================
+   PANDUAN seller baru (muncul kalau belum ada motor)
+   ============================================================ */
+.seller-guide {
+  border: 1px solid color-mix(in oklab, var(--color-brand) 35%, var(--color-border));
+  background: color-mix(in oklab, var(--color-brand) 7%, var(--color-panel));
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin: 4px 0 18px;
+}
+.seller-guide h3 {
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+  letter-spacing: -0.02em;
+}
+.seller-guide ol {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.seller-guide li { line-height: 1.55; font-size: 0.92rem; }
+.seller-guide strong { color: var(--color-brand); }
+.link-inline {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--color-brand);
+  font: inherit;
+  font-weight: 650;
+  text-decoration: underline;
+  cursor: pointer;
+}

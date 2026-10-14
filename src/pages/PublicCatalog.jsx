@@ -77,8 +77,8 @@ export default function PublicCatalog() {
   if (sellers.length === 0) {
     return (
       <div className="center-page">
-        <p>Belum ada showroom yang terdaftar.</p>
-        <Link className="btn primary" to="/auth">Daftar Showroom</Link>
+        <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>Belum ada showroom yang terdaftar.</p>
+        <p className="muted">Katalog sedang disiapkan. Cek lagi nanti ya.</p>
       </div>
     )
   }
@@ -95,7 +95,7 @@ export default function PublicCatalog() {
           </p>
         </div>
         <div className="header-actions">
-          <Link className="btn ghost" to="/auth">Masuk / Daftar</Link>
+          <Link className="btn ghost" to="/auth">Masuk</Link>
         </div>
       </header>
 
@@ -161,7 +161,17 @@ export default function PublicCatalog() {
 
       {/* Grid motor */}
       {visibleMotos.length === 0 ? (
-        <div className="center-page"><p>Tidak ada motor yang cocok dengan filter.</p></div>
+        <div className="empty-catalog">
+          <span className="empty-icon">🏍️</span>
+          <p className="empty-title">
+            {activeSlug ? 'Belum ada motor di showroom ini' : 'Belum ada motor tersedia'}
+          </p>
+          <p className="muted small">
+            {activeSlug
+              ? 'Stok sedang diperbarui. Chat showroom di atas untuk tanya ketersediaan.'
+              : 'Coba pilih showroom lain atau cek lagi nanti.'}
+          </p>
+        </div>
       ) : (
         <div className="grid">
           {visibleMotos.map((m) => {

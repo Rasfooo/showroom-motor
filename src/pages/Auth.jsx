@@ -36,7 +36,9 @@ export default function Auth() {
         const email = await emailOf(username.trim())
         const { error } = await signIn(email, password)
         if (error) throw new Error('Password salah. Coba lagi.')
-        navigate('/dashboard')
+        // Admin langsung ke Panel Admin; seller ke dashboard showroom-nya
+        const { data: admin } = await supabase.rpc('is_admin')
+        navigate(admin ? '/admin' : '/dashboard')
       } else {
         // Lupa password: kirim link reset ke email seller
         const email = await emailOf(username.trim())
