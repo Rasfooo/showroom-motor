@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
+import PasswordInput from '../components/PasswordInput'
 
 // ============================================================
 // LOGIN SELLER — pakai USERNAME (dibuat admin), bukan daftar sendiri.
@@ -82,12 +83,9 @@ export default function Auth() {
           {mode === 'signin' && (
             <>
               <label>Password</label>
-              <input
-                type="password"
+              <PasswordInput
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
                 placeholder="••••••••"
               />
             </>

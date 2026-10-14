@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import PasswordInput from '../components/PasswordInput'
 
 // ============================================================
 // RESET PASSWORD — dibuka dari link yang dikirim Supabase ke email seller.
@@ -83,21 +84,15 @@ export default function ResetPassword() {
         ) : (
           <form onSubmit={handleSubmit}>
             <label>Password Baru</label>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
               placeholder="Minimal 6 karakter"
             />
             <label>Ulangi Password Baru</label>
-            <input
-              type="password"
+            <PasswordInput
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              required
-              minLength={6}
               placeholder="Ulangi password"
             />
             {error && <div className="alert error">{error}</div>}
