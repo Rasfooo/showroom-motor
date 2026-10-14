@@ -22,11 +22,16 @@ export default function Dashboard() {
   const [err, setErr] = useState('')
   const [saving, setSaving] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [profileForm, setProfileForm] = useState({
     showroom_name: '', whatsapp: '', location: '', logo: null, theme: 'dark',
   })
 
   useEffect(() => { if (!loading && !session) navigate('/auth') }, [loading, session])
+  useEffect(() => {
+    if (!session) return
+    supabase.rpc('is_admin').then(({ data }) => setIsAdmin(!!data))
+  }, [session])
   useEffect(() => { if (session) loadMotos() }, [session])
   useEffect(() => {
     if (profile) {
@@ -185,6 +190,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="header-actions">
+          {isAdmin && <Link className="btn ghost" to="/admin">🛠️ Panel Admin</Link>}
           <button className="btn ghost" onClick={() => setShowProfile((v) => !v)}>Profil & Tema</button>
           <a className="btn ghost" href={publicUrl} target="_blank" rel="noreferrer">Lihat Katalog ↗</a>
           <button className="btn ghost" onClick={async () => { await signOut(); navigate('/auth') }}>Keluar</button>

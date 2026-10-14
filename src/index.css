@@ -755,3 +755,56 @@ td { font-variant-numeric: tabular-nums; }
   .dash-logo { width: 44px; height: 44px; border-radius: 12px; }
   .dash-cta .btn.lg { width: 100%; text-align: center; }
 }
+
+
+/* ============================================================
+   HALAMAN ADMIN — kredensial akun baru + daftar seller
+   ============================================================ */
+.cred-card {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: var(--color-panel);
+}
+.cred-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+  flex-wrap: wrap;
+}
+.cred-row > span {
+  min-width: 92px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+.cred-row code {
+  background: color-mix(in oklab, var(--color-bg) 70%, var(--color-brand) 8%);
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-size: 0.86rem;
+  word-break: break-all;
+}
+.seller-list { display: flex; flex-direction: column; gap: 8px; }
+.seller-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-panel);
+  flex-wrap: wrap;
+}
+.seller-info { display: flex; flex-direction: column; min-width: 0; }
+.seller-info strong { font-size: 0.98rem; }
+.seller-actions { display: flex; gap: 6px; flex-shrink: 0; }
+@media (max-width: 560px) {
+  .cred-row > span { min-width: 100%; }
+  .seller-actions { width: 100%; }
+  .seller-actions .btn { flex: 1; text-align: center; }
+}

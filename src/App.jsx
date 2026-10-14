@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import PublicCatalog from './pages/PublicCatalog'
 import Auth from './pages/Auth'
 import ResetPassword from './pages/ResetPassword'
+import Admin from './pages/Admin'
 import Dashboard from './pages/Dashboard'
 
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/" element={<PublicCatalog />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route
           path="*"
