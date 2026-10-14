@@ -170,11 +170,19 @@ export default function Dashboard() {
   return (
     <div className="container">
       <header className="dash-header">
-        <div>
-          <h1>Dashboard Showroom</h1>
-          <p className="muted">
-            {profile?.showroom_name} {profile?.location ? `· ${profile.location}` : ''}
-          </p>
+        <div className="dash-brand">
+          {profile?.logo_url ? (
+            <img src={profile.logo_url} alt="logo" className="dash-logo" />
+          ) : (
+            <span className="dash-logo placeholder">🏍️</span>
+          )}
+          <div>
+            <h1>{profile?.showroom_name || 'Showroom Saya'}</h1>
+            <p className="muted">
+              {profile?.location ? `📍 ${profile.location}` : 'Lengkapi profil showroom'}
+              {profile?.slug ? ` · /${profile.slug}` : ''}
+            </p>
+          </div>
         </div>
         <div className="header-actions">
           <button className="btn ghost" onClick={() => setShowProfile((v) => !v)}>Profil & Tema</button>
@@ -185,6 +193,17 @@ export default function Dashboard() {
 
       {msg && <div className="alert info">{msg}</div>}
       {err && <div className="alert error">{err}</div>}
+
+      {/* Aksi utama: tambah motor */}
+      <div className="dash-cta">
+        <a className="btn primary lg" href="#form-motor">
+          + Tambah Motor
+        </a>
+        <span className="muted small">
+          {motos.length} motor · {motos.filter((m) => m.is_available).length} tersedia
+        </span>
+      </div>
+
 
       {/* Profil + Tema showroom */}
       {showProfile && (
@@ -230,7 +249,7 @@ export default function Dashboard() {
       )}
 
       {/* Form tambah/edit motor */}
-      <form className="panel" onSubmit={handleSubmit}>
+      <form className="panel" id="form-motor" onSubmit={handleSubmit}>
         <h3>{editingId ? 'Edit Motor' : 'Tambah Motor'}</h3>
         <div className="form-grid">
           <div>

@@ -1,20 +1,30 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { supabase, slugify } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
+
+// ============================================================
+// LOGIN SELLER — pakai USERNAME (dibuat admin), bukan daftar sendiri.
+// Reset password -> Supabase kirim link ke email seller.
+// ============================================================
 
 export default function Auth() {
-  const [mode, setMode] = useState('signin') // 'signin' | 'signup'
-  const [email, setEmail] = useState('')
+  const [mode, setMode] = useState('signin') // 'signin' | 'forgot'
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [showroom, setShowroom] = useState('')
-  const [wa, setWa] = useState('')
-  const [location, setLocation] = useState('')
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)
   const { signIn } = useAuth()
   const navigate = useNavigate()
+
+  // username -> email (via RPC supaya bisa dipanggil sebelum login)
+  const emailOf = async (uname) => {
+    const { data, error } = await supabase.rpc('email_of_username', { uname })
+    if (error) throw new Error('Gagal mencari username: ' + error.message)
+    if (!data) throw new Error('Username tidak ditemukan.')
+    return data
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -23,34 +33,20 @@ export default function Auth() {
     setLoading(true)
     try {
       if (mode === 'signin') {
+        const email = await emailOf(username.trim())
         const { error } = await signIn(email, password)
-        if (error) throw error
+        if (error) throw new Error('Password salah. Coba lagi.')
         navigate('/dashboard')
       } else {
-        // Daftar: buat akun auth dulu
-        const { data, error } = await supabase.auth.signUp({ email, password })
-        if (error) throw error
-        const uid = data.user?.id
-        if (!uid) {
-          setInfo('Cek email kamu untuk konfirmasi, lalu login.')
-          setLoading(false)
-          return
-        }
-        // Buat profil showroom
-        const slug = slugify(showroom) || `toko-${uid.slice(0, 6)}`
-        const { error: pErr } = await supabase.from('sellers').insert({
-          id: uid,
-          email,
-          showroom_name: showroom,
-          slug,
-          whatsapp: wa.replace(/[^0-9]/g, ''),
-          location,
+        // Lupa password: kirim link reset ke email seller
+        const email = await emailOf(username.trim())
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
         })
-        if (pErr && pErr.code !== '23505') throw pErr // 23505 = slug sudah dipakai
-        // Auto login
-        const { error: lErr } = await signIn(email, password)
-        if (lErr) throw lErr
-        navigate('/dashboard')
+        if (error) throw error
+        setInfo(
+          `Link reset password sudah dikirim ke email seller (${maskEmail(email)}). Cek inbox / spam.`
+        )
       }
     } catch (err) {
       setError(err.message || 'Terjadi kesalahan')
@@ -66,70 +62,31 @@ export default function Auth() {
         <p className="muted">
           {mode === 'signin'
             ? 'Masuk ke dashboard showroom kamu'
-            : 'Buat akun & showroom baru'}
+            : 'Masukkan username untuk reset password'}
         </p>
 
-        <div className="tabs">
-          <button
-            className={mode === 'signin' ? 'active' : ''}
-            onClick={() => setMode('signin')}
-            type="button"
-          >
-            Masuk
-          </button>
-          <button
-            className={mode === 'signup' ? 'active' : ''}
-            onClick={() => setMode('signup')}
-            type="button"
-          >
-            Daftar
-          </button>
-        </div>
-
         <form onSubmit={handleSubmit}>
-          <label>Email</label>
+          <label>Username</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
-            placeholder="toko@email.com"
+            autoCapitalize="none"
+            autoCorrect="off"
+            placeholder="username dari admin"
           />
 
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            placeholder="Minimal 6 karakter"
-          />
-
-          {mode === 'signup' && (
+          {mode === 'signin' && (
             <>
-              <label>Nama Showroom</label>
+              <label>Password</label>
               <input
-                type="text"
-                value={showroom}
-                onChange={(e) => setShowroom(e.target.value)}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="Contoh: Motor Jaya Abadi"
-              />
-              <label>Nomor WhatsApp</label>
-              <input
-                type="tel"
-                value={wa}
-                onChange={(e) => setWa(e.target.value)}
-                required
-                placeholder="6281234567890"
-              />
-              <label>Lokasi</label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Kota, contoh: Bekasi"
+                minLength={6}
+                placeholder="••••••••"
               />
             </>
           )}
@@ -138,21 +95,23 @@ export default function Auth() {
           {info && <div className="alert info">{info}</div>}
 
           <button className="btn primary" disabled={loading} type="submit">
-            {loading ? 'Memproses...' : mode === 'signin' ? 'Masuk' : 'Buat Showroom'}
+            {loading
+              ? 'Memproses...'
+              : mode === 'signin'
+                ? 'Masuk'
+                : 'Kirim Link Reset'}
           </button>
         </form>
 
         <p className="muted center">
           {mode === 'signin' ? (
-            <>
-              Belum punya akun?{' '}
-              <a onClick={() => setMode('signup')}>Daftar di sini</a>
-            </>
+            <a onClick={() => { setMode('forgot'); setError(''); setInfo('') }}>
+              Lupa password?
+            </a>
           ) : (
-            <>
-              Sudah punya akun?{' '}
-              <a onClick={() => setMode('signin')}>Masuk</a>
-            </>
+            <a onClick={() => { setMode('signin'); setError(''); setInfo('') }}>
+              ← Kembali ke login
+            </a>
           )}
         </p>
         <p className="muted center">
@@ -161,4 +120,11 @@ export default function Auth() {
       </div>
     </div>
   )
+}
+
+function maskEmail(e) {
+  const [u, d] = String(e).split('@')
+  if (!d) return e
+  const shown = u.slice(0, 2)
+  return `${shown}${'*'.repeat(Math.max(1, u.length - 2))}@${d}`
 }
